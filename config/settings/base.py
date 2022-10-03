@@ -148,6 +148,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# AWS S3 CONFIGURATION
+AWS_AUTO_CREATE_BUCKET = True
+AWS_BUCKET_ACL = "public-read"
+
+
 # STATIC
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
@@ -161,6 +166,7 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
+
 
 # MEDIA
 # ------------------------------------------------------------------------------
