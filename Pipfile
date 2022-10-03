@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 django-storages = "*"
 boto3 = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 
