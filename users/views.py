@@ -1,9 +1,10 @@
-from django.contrib.auth import login
+from django.contrib.auth import login,logout
 from django.forms import modelformset_factory
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from users.models import AcademicBackground, Career, User
 from users.forms import UserForm
+from mj import mJ
 import requests
 
 
@@ -48,6 +49,10 @@ def login(request):
     return redirect(f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_url}&response_type=code")
 
 
+def logout(request):
+    logout(request.user)
+    return redirect("/")
+
 def kakao_redirect(request):
     try:
         access_token = get_access_token(
@@ -55,6 +60,13 @@ def kakao_redirect(request):
         user_info = get_user_info(access_token)
     except KakaoLoginException:
         return redirect(reverse("users:login"))
+    academic_background_formset_factory = modelformset_factory(
+                AcademicBackground,
+                exclude=["user"], extra=1)
+    academic_background_formset = academic_background_formset_factory()
+    career_formset_factory = modelformset_factory(
+                Career, exclude=["user"],  extra=1)
+    career_formset = career_formset_factory()
     if request.method == 'GET':
         if User.objects.filter(username=user_info["kakao_id"]).exists():
             user = User.objects.get(username=user_info["kakao_id"])
@@ -62,13 +74,6 @@ def kakao_redirect(request):
             login(request, user)
             return redirect("/")
         else:
-            academic_background_formset_factory = modelformset_factory(
-                AcademicBackground,
-                fields='__all__', extra=1)
-            academic_background_formset = academic_background_formset_factory()
-            career_formset_factory = modelformset_factory(
-                Career, fields='__all__',  extra=1)
-            career_formset = career_formset_factory()
             return render(request, "account/signup.html",
                           context={"form": UserForm(),
                                    "career_formset": career_formset,
@@ -76,10 +81,18 @@ def kakao_redirect(request):
                                    "kakao_id": user_info["kakao_id"]})
     else:
         username = request.POST.get("username")
-        user = UserForm(request.POST).save(commit=False)
+        user = UserForm(request.POST, request.FILES).save(commit=False)
         user.username = username
         user.profile_photo_link = user_info["profile_img_link"]
         user.save()
+        academic_backrounds = academic_background_formset(request.POST).save(commit=False)
+        for academic_background in academic_backrounds:
+            academic_background.user = user
+            user.save()
+        careers = career_formset(request.POST).save(commit=False)
+        for career in careers:
+            career.user = user
+            career.save()
         return redirect("/")
 
 

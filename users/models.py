@@ -1,8 +1,10 @@
-from datetime import datetime
-from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.urls import reverse
+from django.core.exceptions import ValidationError
 
+from datetime import datetime
 
 AFFILIATION_CHOICES = (
     ("NATURAL SCIENCE", "자연과학 계열"),
@@ -57,6 +59,8 @@ FIELD_CHOICES = (list(NATURAL_SCIENCE_CHOICES)+list(MEDICAL_FIELD_CHOICES) +
                  list(ENGINEERING_CHOICES[:-1])+list(OTHER_FIELD_CHOCICES[:-1]))
 FIELD_CHOICES.sort(key=lambda x: x[1])
 
+GENERATION_CHOICES = tuple([(str(year), f"{year}기")for year in range(1, datetime.now().year-2014)])
+
 YEAR_CHOICES = tuple([(str(year), str(year))for year in range(2014, datetime.now().year+1)])
 
 
@@ -77,6 +81,7 @@ class University(models.Model):
 
 
 class AcademicBackground(models.Model):
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="academic_backgrounds", null=True)
     academy_affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
     academy_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
     academy_starting_year = models.CharField(max_length=10, default="2022", choices=YEAR_CHOICES)
@@ -88,6 +93,7 @@ class AcademicBackground(models.Model):
 
 
 class Career(models.Model):
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='careers', null=True)
     career_affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
     career_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
     career_starting_year = models.CharField(max_length=10, default="2022", choices=YEAR_CHOICES)
@@ -119,7 +125,7 @@ class User(AbstractUser):
     profile_photo_link = models.URLField()
     name = models.CharField(_("Name of User"), blank=True, max_length=255)
 
-    generation = models.PositiveIntegerField(null=True)
+    generation = models.CharField(max_length=10, choices=GENERATION_CHOICES)
     class_of_freshman = models.CharField(max_length=10,
                                          choices=tuple([(f"{i}반", f"{i}반") for i in range(1, 6)])
                                          )
@@ -129,8 +135,6 @@ class User(AbstractUser):
     contactable_email = models.EmailField(null=True, blank=True)
     contactable_phone_number = models.CharField(max_length=20, null=True, blank=True)
 
-    academic_backgrounds = models.ManyToManyField(AcademicBackground)
-    careers = models.ManyToManyField(Career)
     interested_fields = models.ManyToManyField(InterestedField)
 
     homepage_link = models.URLField(null=True, blank=True)
