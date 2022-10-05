@@ -1,15 +1,14 @@
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import AbstractUser
+from datetime import datetime
 from django.db import models
-from django.urls import reverse
+from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
 
 AFFILIATION_CHOICES = (
-    ("NATURAL SCIENCE", "자연과학"),
+    ("NATURAL SCIENCE", "자연과학 계열"),
     ("ENGINEERING", "공학 계열"),
     ("MEDICAL", "의학 계열"),
-    ("OTHER FIELDS", "기타"),
+    ("OTHER FIELDS", "기타 계열"),
 )
 
 NATURAL_SCIENCE_CHOICES = (
@@ -31,16 +30,16 @@ MEDICAL_FIELD_CHOICES = (
 )
 
 ENGINEERING_CHOICES = (
-    ("Architectural Engineering", "건축/건설"),
-    ("Mechanical Engineering", "기계"),
+    ("Architectural Engineering", "건축/건설 공학"),
+    ("Mechanical Engineering", "기계공학"),
     ("Industrial Engineering", "산업공학"),
     ("Industrial Design", "산업디자인"),
     ("Biotechnology", "생명공학"),
     ("Medical Engineeing", "의료공학"),
     ("Elctrical & Electronic Engineering", "전기전자"),
-    ("Computer Science", "컴퓨터"),
+    ("Computer Science", "컴퓨터공학"),
     ("Aerospace Engineering", "항공우주공학"),
-    ("Chemical Engineering", "화학"),
+    ("Chemical Engineering", "화학공학"),
     ("Environmental Engineering", "환경공학"),
     ("ETC", "기타"),
 )
@@ -58,27 +57,51 @@ FIELD_CHOICES = (list(NATURAL_SCIENCE_CHOICES)+list(MEDICAL_FIELD_CHOICES) +
                  list(ENGINEERING_CHOICES[:-1])+list(OTHER_FIELD_CHOCICES[:-1]))
 FIELD_CHOICES.sort(key=lambda x: x[1])
 
+YEAR_CHOICES = tuple([(str(year), str(year))for year in range(2014, datetime.now().year+1)])
+
+
+class University(models.Model):
+    class Meta:
+        ordering = ["name", 'acronym']
+
+    name = models.CharField(max_length=200)
+    acronym = models.CharField(max_length=20)
+
+    @classmethod
+    def get_university_list(cls):
+        # return (("", ''),)
+        return tuple([(university.name, f"{university.name}({university.acronym})") for university in University.objects.all()])
+
+    def __str__(self):
+        return f"{self.name} - {self.acronym}"
+
 
 class AcademicBackground(models.Model):
-    starting_year = models.PositiveIntegerField(default=2022)
-    ending_year = models.PositiveIntegerField(default=2022, null=True, blank=True)
+    academy_affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
+    academy_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
+    academy_starting_year = models.CharField(max_length=10, default="2022", choices=YEAR_CHOICES)
+    academy_ending_year = models.CharField(max_length=10, choices=YEAR_CHOICES, null=True, blank=True)
     degree = models.CharField(max_length=30, choices=(("BS", "이학사"), ("BA", "인문 학사"), ("MS", "이학 석사"),
                               ("MA", "인문학 석사"), ("MBA", "경영학 석사"), ("Ph.D", "박사")), default="BS")
-    institution = models.CharField(
-        max_length=200, help_text="해외 대학, IST, POSTECH의 경우 영어대문자로 기재바랍니다. 그 외 국내대학교는 **대(ex:서울대)까지만 기재해주세요.")
+    institution = models.CharField(max_length=200, choices=University.get_university_list())
     major = models.CharField(max_length=200, help_text="한글로 기재바랍니다. 복수전공의 경우 반점(,)으로 표시해주세요.")
 
 
 class Career(models.Model):
-    starting_year = models.PositiveIntegerField(default=2022)
-    ending_year = models.PositiveIntegerField(default=2022)
-    institution = models.CharField(max_length=200)
+    career_affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
+    career_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
+    career_starting_year = models.CharField(max_length=10, default="2022", choices=YEAR_CHOICES)
+    career_ending_year = models.CharField(max_length=10, choices=YEAR_CHOICES, null=True, blank=True)
+    company = models.CharField(max_length=200)
     deparment = models.CharField(max_length=200)
     position = models.CharField(max_length=100)
 
 
 class InterestedField(models.Model):
     field = models.CharField(max_length=200, choices=FIELD_CHOICES)
+
+    def __str__(self):
+        return f"{self.get_field_display()}"
 
 
 class User(AbstractUser):
@@ -93,7 +116,7 @@ class User(AbstractUser):
 
     first_name = None  # type: ignore
     last_name = None  # type: ignore
-    profile_photo = models.ImageField(upload_to="profile", null=True, blank=True)
+    profile_photo_link = models.URLField()
     name = models.CharField(_("Name of User"), blank=True, max_length=255)
 
     generation = models.PositiveIntegerField(null=True)
@@ -106,7 +129,6 @@ class User(AbstractUser):
     contactable_email = models.EmailField(null=True, blank=True)
     contactable_phone_number = models.CharField(max_length=20, null=True, blank=True)
 
-    affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
     academic_backgrounds = models.ManyToManyField(AcademicBackground)
     careers = models.ManyToManyField(Career)
     interested_fields = models.ManyToManyField(InterestedField)
@@ -116,6 +138,7 @@ class User(AbstractUser):
     insta_link = models.URLField(null=True, blank=True)
     github_link = models.URLField(null=True, blank=True)
     cv = models.FileField(upload_to="cv", null=True, blank=True)
+    cv_link = models.URLField(null=True, blank=True)
 
     email_accept = models.BooleanField(default=False)
 

@@ -1,8 +1,8 @@
-from allauth.account.forms import SignupForm
-from allauth.socialaccount.forms import SignupForm as SocialSignupForm
+from django.forms import ModelForm
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+
 
 User = get_user_model()
 
@@ -26,17 +26,8 @@ class UserAdminCreationForm(admin_forms.UserCreationForm):
         }
 
 
-class UserSignupForm(SignupForm):
-    """
-    Form that will be rendered on a user sign up section/screen.
-    Default fields will be added automatically.
-    Check UserSocialSignupForm for accounts created from social.
-    """
-
-
-class UserSocialSignupForm(SocialSignupForm):
-    """
-    Renders the form when user has signed up using social accounts.
-    Default fields will be added automatically.
-    See UserSignupForm otherwise.
-    """
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        exclude = ["email", 'password', "last_login", "is_superuser", "groups", "profile_photo_link",
+                   "is_active", "is_staff", "username", "date_joined", "user_permissions", "academic_backgrounds", "careers", ]

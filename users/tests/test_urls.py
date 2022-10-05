@@ -3,6 +3,11 @@ from django.urls import resolve, reverse
 from users.models import User
 
 
+def test_login():
+    assert reverse("users:login") == "/users/login/"
+    assert resolve("/users/login/").view_name == "users:login"
+
+
 def test_detail(user: User):
     assert (
         reverse("users:detail", kwargs={"username": user.username})

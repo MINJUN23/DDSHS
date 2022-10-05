@@ -15,7 +15,6 @@ READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(ROOT_DIR / ".env"))
-
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
@@ -46,7 +45,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "HOST": "ddshs.c5uusnymv3ci.ap-northeast-2.rds.amazonaws.com",
-        "NAME": "postgres",
+        "NAME": "ddshs",
         "USER": "ddshs",
         "PASSWORD": env('DATABASE_PASSWORD'),
         "PORT": "5432",
@@ -82,7 +81,7 @@ THIRD_PARTY_APPS = [
     "crispy_bootstrap5",
     "allauth",
     "allauth.account",
-    "allauth.socialaccount",
+    # "allauth.socialaccount",
 ]
 
 LOCAL_APPS = [

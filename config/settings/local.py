@@ -1,5 +1,5 @@
-from .base import *  # noqa
-from .base import env
+from config.settings.base import *  # noqa
+from config.settings.base import env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ SECRET_KEY = env(
     default="puCqtNt9mn21ELSyvNLlVW6GleAMlmIBNd4bCm0z0vMbmKSDYpmqFHPICCB0WPYh",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "kauth.kakao.com"]
 
 # CACHES
 # ------------------------------------------------------------------------------
