@@ -6,16 +6,11 @@ from users.models import User
 def test_detail(user: User):
     assert (
         reverse("users:detail", kwargs={"username": user.username})
-        == f"/users/{user.username}/"
+        == f"/users/detail/{user.username}/"
     )
-    assert resolve(f"/users/{user.username}/").view_name == "users:detail"
-
-
-def test_update():
-    assert reverse("users:update") == "/users/~update/"
-    assert resolve("/users/~update/").view_name == "users:update"
+    assert resolve(f"/users/detail/{user.username}/").view_name == "users:detail"
 
 
 def test_redirect():
-    assert reverse("users:redirect") == "/users/~redirect/"
-    assert resolve("/users/~redirect/").view_name == "users:redirect"
+    assert reverse("users:kakao_redirect") == "/users/kakao_redirect/"
+    assert resolve("/users/kakao_redirect/").view_name == "users:kakao_redirect"
