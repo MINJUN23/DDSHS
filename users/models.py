@@ -81,6 +81,8 @@ class University(models.Model):
 
 
 class AcademicBackground(models.Model):
+    class Meta:
+        ordering = ["academy_starting_year", "academy_ending_year"]
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="academic_backgrounds", null=True)
     academy_affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
     academy_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
@@ -93,6 +95,8 @@ class AcademicBackground(models.Model):
 
 
 class Career(models.Model):
+    class Meta:
+        ordering = ["career_starting_year", "career_ending_year"]
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='careers', null=True)
     career_affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
     career_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
@@ -165,3 +169,6 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"username": self.username})
+
+    def __str__(self):
+        return f"{self.generation}기 {self.username}"

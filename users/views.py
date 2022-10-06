@@ -57,11 +57,11 @@ def logout(request):
 
 def kakao_redirect(request):
     academic_background_formset_factory = modelformset_factory(
-                AcademicBackground,
-                exclude=["user"], extra=1)
+                AcademicBackground,exclude=["user"],
+                    extra=1,can_delete = True)
     academic_background_formset = academic_background_formset_factory()
-    career_formset_factory = modelformset_factory(
-                Career, exclude=["user"],  extra=1)
+    career_formset_factory = modelformset_factory(Career,exclude=["user"],
+                   extra=1,can_delete = True)
     career_formset = career_formset_factory()
     if request.method == 'GET':
         try:
@@ -85,21 +85,38 @@ def kakao_redirect(request):
                                    })
     else:
         username = request.POST.get("username")
-        user = UserForm(request.POST, request.FILES).save(commit=False)
-        user.username = username
-        user.profile_photo_link = request.POST.get("username")
-        user.save()
-        academic_backrounds = academic_background_formset_factory(request.POST).save(commit=False)
-        for academic_background in academic_backrounds:
-            academic_background.user = user
-            academic_background.save()
-        careers = career_formset_factory(request.POST).save(commit=False)
-        for career in careers:
-            career.user = user
-            career.save()
-        login_user(request,user)
-        return redirect("/")
+        try:
+            user = UserForm(request.POST, request.FILES).save(commit=False)
+            user.username = username
+            user.profile_photo_link = request.POST.get("username")
+            user.save()
+            academic_background_formset = academic_background_formset_factory(request.POST,queryset=AcademicBackground.objects.none())
+            academic_backgrounds = academic_background_formset.save(commit=False)
+            for academic_background in academic_backgrounds:
+                academic_background.user = user
+                academic_background.save()
+            career_formset = career_formset_factory(request.POST, queryset=Career.objects.none())
+            careers = career_formset.save(commit=False)
+            for career in careers:
+                career.user = user
+                career.save()
+            login_user(request,user)
+            return redirect("/")
+        except Exception:
+            User.objects.get(username=username).delete()
+            return redirect(reverse("users:login"))
 
 
-def detail(request):
-    pass
+def detail(request,username):
+    user = User.objects.get(username=username)
+    academic_background_formset_factory = modelformset_factory(
+                AcademicBackground,exclude=["user"],
+                    extra=1,can_delete = True, can_order=True)
+    academic_background_formset = academic_background_formset_factory(queryset=user.academic_backgrounds.all())
+    career_formset_factory = modelformset_factory(Career,exclude=["user"],
+                   extra=1,can_delete = True, can_order=True)
+    career_formset = career_formset_factory(queryset=user.careers.all())
+    return render(request, "account/detail.html", context={"form": UserForm(instance=user),
+                                   "career_formset": career_formset,
+                                   "academic_background_formset": academic_background_formset,
+                                   })
