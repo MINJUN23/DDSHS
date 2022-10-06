@@ -44,7 +44,7 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "HOST": "ddshs.c5uusnymv3ci.ap-northeast-2.rds.amazonaws.com",
+        "HOST": env('DATABASE_HOST'),
         "NAME": "ddshs",
         "USER": "ddshs",
         "PASSWORD": env('DATABASE_PASSWORD'),
@@ -79,8 +79,8 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
-    "allauth",
-    "allauth.account",
+    # "allauth",
+    # "allauth.account",
     # "allauth.socialaccount",
 ]
 
@@ -101,7 +101,7 @@ MIGRATION_MODULES = {"sites": "contrib.sites.migrations"}
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
+    # "allauth.account.auth_backends.AuthenticationBackend",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"

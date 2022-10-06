@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block head_title %}{% translate "Sign In" %}{% endblock %}
 {% block inner %}
@@ -11,9 +12,16 @@
 <form class="login" method="POST">
   {% csrf_token %}
   <input type="hidden" name="username" value='{{kakao_id}}'>
+  <input type="hidden" name="proflie_img_link" value='{{proflie_img_link}}'>
   {{ form|crispy }}
-  {% include "account/modules/academic_background_form.html"%}
-  {% include "account/modules/career_form.html"%}
+  <div class="academic_background">
+    {% include "account/modules/academic_background_form.html"%}
+    <button id="add_academic_background_form" type='button'>추가</button>
+  </div>
+  <div class="career">
+    {% include "account/modules/career_form.html"%}
+    <button id="add_career_form" type='button'>추가</button>
+  </div>
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
@@ -21,3 +29,7 @@
 </form>
 
 {% endblock inner %}
+
+{% block inline_javascript %}
+  <script src="{% static 'js/users/signup.js' %}"></script>
+{% endblock inline_javascript %}

@@ -281,3 +281,7 @@ media/
 
 #environment variables
 *.env
+
+
+#javascript tests
+static/js/*/tests/*

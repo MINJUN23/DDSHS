@@ -1,12 +1,12 @@
-from django.contrib.auth import login,logout
+import requests
+from django.contrib.auth import login as login_user
+from django.contrib.auth import logout as logout_user
 from django.forms import modelformset_factory
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from users.models import AcademicBackground, Career, User
-from users.forms import UserForm
-from mj import mJ
-import requests
 
+from users.forms import UserForm
+from users.models import AcademicBackground, Career, User
 
 client_id = "033f113746602cb604db505e4972ed92"
 
@@ -44,22 +44,18 @@ def get_user_info(access_token):
 
 
 def login(request):
+    if request.user.is_authenticated:
+        return redirect("/")
     redirect_url = get_full_url_from_suffix(
         request, reverse('users:kakao_redirect'))
     return redirect(f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_url}&response_type=code")
 
 
 def logout(request):
-    logout(request.user)
+    logout_user(request)
     return redirect("/")
 
 def kakao_redirect(request):
-    try:
-        access_token = get_access_token(
-            request, reverse("users:kakao_redirect"))
-        user_info = get_user_info(access_token)
-    except KakaoLoginException:
-        return redirect(reverse("users:login"))
     academic_background_formset_factory = modelformset_factory(
                 AcademicBackground,
                 exclude=["user"], extra=1)
@@ -68,31 +64,40 @@ def kakao_redirect(request):
                 Career, exclude=["user"],  extra=1)
     career_formset = career_formset_factory()
     if request.method == 'GET':
+        try:
+            access_token = get_access_token(
+                request, reverse("users:kakao_redirect"))
+            user_info = get_user_info(access_token)
+        except KakaoLoginException:
+            return redirect(reverse("users:login"))
         if User.objects.filter(username=user_info["kakao_id"]).exists():
             user = User.objects.get(username=user_info["kakao_id"])
             user.profile_photo_link = user_info["profile_img_link"]
-            login(request, user)
+            login_user(request, user)
             return redirect("/")
         else:
             return render(request, "account/signup.html",
                           context={"form": UserForm(),
                                    "career_formset": career_formset,
                                    "academic_background_formset": academic_background_formset,
-                                   "kakao_id": user_info["kakao_id"]})
+                                    "kakao_id": user_info["kakao_id"],
+                                    "proflie_img_link": user_info["profile_img_link"],
+                                   })
     else:
         username = request.POST.get("username")
         user = UserForm(request.POST, request.FILES).save(commit=False)
         user.username = username
-        user.profile_photo_link = user_info["profile_img_link"]
+        user.profile_photo_link = request.POST.get("username")
         user.save()
-        academic_backrounds = academic_background_formset(request.POST).save(commit=False)
+        academic_backrounds = academic_background_formset_factory(request.POST).save(commit=False)
         for academic_background in academic_backrounds:
             academic_background.user = user
-            user.save()
-        careers = career_formset(request.POST).save(commit=False)
+            academic_background.save()
+        careers = career_formset_factory(request.POST).save(commit=False)
         for career in careers:
             career.user = user
             career.save()
+        login_user(request,user)
         return redirect("/")
 
 

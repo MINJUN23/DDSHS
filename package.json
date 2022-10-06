@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "test": "mocha static/js/**/tests/test_*.js"
+  }
+}
