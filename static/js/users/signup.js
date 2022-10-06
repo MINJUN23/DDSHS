@@ -1,4 +1,4 @@
-class Form {
+class Formset {
   static get form_name() {
     return "needs_implementation";
   }
@@ -19,14 +19,14 @@ class Form {
   get deleteButton() {}
 }
 
-class CareerForm extends Form {
+class CareerFormset extends Formset {
   static form = document.getElementById("career_form_0");
   constructor(number) {
     super(number);
   }
 }
 
-class AcademicBackgroundForm extends Form {
+class AcademicBackgroundFormset extends Formset {
   static form = document.getElementById("academic_background_form_0");
   constructor(number) {
     super(form);
