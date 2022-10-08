@@ -6,10 +6,14 @@
     <div data-formset-body>
         <!-- New forms will be inserted in here -->
         {% for form in career_formset %}
-            <div data-formset-form>
-                {{ form|crispy }}
-                <button type="button" class="btn btn-danger" data-formset-delete-button>Delete form</button>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div data-formset-form>
+                    {{ form|crispy }}
+                    <button type="button" class="btn btn-danger" data-formset-delete-button>Delete form</button>
+                </div>
             </div>
+        </div>
         {% endfor %}
     </div>
 
@@ -18,15 +22,19 @@
     any scripts -->
     <script type="form-template" data-formset-empty-form>
         {% escapescript %}
-            <div data-formset-form>
-                {{ career_formset.empty_form|crispy}}
-                <button type="button" class="btn btn-danger" data-formset-delete-button>Delete form</button>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div data-formset-form>
+                    {{ career_formset.empty_form|crispy}}
+                    <button type="button" class="btn btn-danger" data-formset-delete-button>Delete form</button>
+                </div>
             </div>
+        </div>
         {% endescapescript %}
     </script>
 
     <!-- This button will add a new form when clicked -->
-    <input type="button" class="btn btn-success" value="Add another" data-formset-add>
+    <input type="button" class="btn btn-success mt-2" value="Add another" data-formset-add>
 
     <script>jQuery(function($) {
         $("#career_formset").formset({

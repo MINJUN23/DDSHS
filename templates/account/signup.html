@@ -11,20 +11,20 @@
 {% endblock javascript %}
 
 {% block inner %}
-
-<h1>{% translate "Sign In" %}</h1>
-
 <form class="login" method="POST">
   {% csrf_token %}
   <input type="hidden" name="username" value='{{kakao_id}}'>
   <input type="hidden" name="proflie_img_link" value='{{proflie_img_link}}'>
+  <h2 class="mt-5">기초정보 입력</h2>
   {{ form|crispy }}
+  <h2 class="mt-5">학력 입력<small>(선택)</small></h2>
   {% include "account/modules/academic_background_formset.html"%}
+  <h2 class="mt-5">경력 입력<small>(선택)</small></h2>
   {% include "account/modules/career_formset.html"%}
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
-  <button class="primaryAction btn btn-primary" type="submit">{% translate "Sign In" %}</button>
+  <button class="primaryAction btn btn-primary mt-3" type="submit">{% translate "Sign In" %}</button>
 </form>
 
 {% endblock inner %}
