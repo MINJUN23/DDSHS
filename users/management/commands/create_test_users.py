@@ -42,9 +42,9 @@ def set_careers(user):
             career_field=choice(AFFILIATION_CHOICES)[0],
             career_starting_year=career_starting_year,
             career_ending_year=career_ending_year,
-            company="TEST_COMPANY",
-            department="TEST_DEPARTMENT",
-            position="TEST_POSITION",
+            company="TC",
+            department="TD",
+            position="TP",
         )
 
 

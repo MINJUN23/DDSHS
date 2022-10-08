@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
+<div>
+    <canvas id="myChart"></canvas>
+</div>
 <div class="container-fluid">
 {% for user in users%}
     {% if forloop.counter0|divisibleby:"2" %}
@@ -60,3 +64,6 @@
 </div>
 
 {% endblock content %}
+{% block inline_javascript %}
+<script type="module"  src="{% static 'js/home.js' %}" async></script>
+{% endblock inline_javascript %}
