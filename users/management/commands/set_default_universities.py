@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+
 from users.models import University
 
 DEFAULT_UNIVERSITIES = [
@@ -50,12 +51,15 @@ DEFAULT_UNIVERSITIES = [
 ]
 
 
+def set_universities():
+    for UNIVERSITY in DEFAULT_UNIVERSITIES:
+        university = University.objects.get_or_create(
+            name=UNIVERSITY["name"],
+            acronym=UNIVERSITY["acronym"])
+
+
 class Command(BaseCommand):
     help = 'Set default universities'
 
     def handle(self, *args, **options):
-        for UNIVERSITY in DEFAULT_UNIVERSITIES:
-            university = University.objects.get_or_create(
-                name=UNIVERSITY["name"],
-                acronym=UNIVERSITY["acronym"])
-            print(university)
+        set_universities()

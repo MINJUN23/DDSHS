@@ -1,10 +1,10 @@
-from django.utils.translation import gettext_lazy as _
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
-from django.core.exceptions import ValidationError
-
-from datetime import datetime
+from django.utils.translation import gettext_lazy as _
 
 AFFILIATION_CHOICES = (
     ("NATURAL SCIENCE", "자연과학 계열"),
@@ -61,8 +61,10 @@ FIELD_CHOICES.sort(key=lambda x: x[1])
 
 GENERATION_CHOICES = tuple([(str(year), f"{year}기")for year in range(1, datetime.now().year-2014)])
 
-YEAR_CHOICES = tuple([(str(year), str(year))for year in range(2014, datetime.now().year+1)])
+YEAR_CHOICES = tuple([(str(year), str(year)) for year in range(2014, datetime.now().year+1)])
 
+DEGREE_CHOICES = (("BS", "이학사"), ("BA", "인문 학사"), ("MS", "이학 석사"),
+                              ("MA", "인문학 석사"), ("MBA", "경영학 석사"), ("Ph.D", "박사"))
 
 class University(models.Model):
     class Meta:
@@ -86,10 +88,9 @@ class AcademicBackground(models.Model):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="academic_backgrounds", null=True)
     academy_affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
     academy_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
-    academy_starting_year = models.CharField(max_length=10, default="2022", choices=YEAR_CHOICES)
-    academy_ending_year = models.CharField(max_length=10, choices=YEAR_CHOICES, null=True, blank=True)
-    degree = models.CharField(max_length=30, choices=(("BS", "이학사"), ("BA", "인문 학사"), ("MS", "이학 석사"),
-                              ("MA", "인문학 석사"), ("MBA", "경영학 석사"), ("Ph.D", "박사")), default="BS")
+    academy_starting_year = models.CharField(max_length=20, default="2022", choices=YEAR_CHOICES)
+    academy_ending_year = models.CharField(max_length=20, choices=YEAR_CHOICES, null=True, blank=True)
+    degree = models.CharField(max_length=30, choices=DEGREE_CHOICES, default="BS")
     institution = models.CharField(max_length=200, choices=University.get_university_list())
     major = models.CharField(max_length=200, help_text="한글로 기재바랍니다. 복수전공의 경우 반점(,)으로 표시해주세요.")
 
@@ -100,10 +101,10 @@ class Career(models.Model):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='careers', null=True)
     career_affiliation = models.CharField(max_length=50, choices=AFFILIATION_CHOICES)
     career_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
-    career_starting_year = models.CharField(max_length=10, default="2022", choices=YEAR_CHOICES)
-    career_ending_year = models.CharField(max_length=10, choices=YEAR_CHOICES, null=True, blank=True)
+    career_starting_year = models.CharField(max_length=20, default="2022", choices=YEAR_CHOICES)
+    career_ending_year = models.CharField(max_length=20, choices=YEAR_CHOICES, null=True, blank=True)
     company = models.CharField(max_length=200)
-    deparment = models.CharField(max_length=200)
+    department = models.CharField(max_length=200)
     position = models.CharField(max_length=100)
 
 
@@ -126,27 +127,27 @@ class User(AbstractUser):
 
     first_name = None  # type: ignore
     last_name = None  # type: ignore
-    profile_photo_link = models.URLField()
+    profile_photo_link = models.URLField(max_length=1000)
     name = models.CharField(_("Name of User"), blank=True, max_length=255)
 
-    generation = models.CharField(max_length=10, choices=GENERATION_CHOICES)
-    class_of_freshman = models.CharField(max_length=10,
+    generation = models.CharField(max_length=20, choices=GENERATION_CHOICES)
+    class_of_freshman = models.CharField(max_length=20,
                                          choices=tuple([(f"{i}반", f"{i}반") for i in range(1, 6)])
                                          )
-    number_of_freshman = models.CharField(max_length=10,
-                                          choices=tuple([(f"{i}번", f"{i}번") for i in range(1, 19)])
+    number_of_freshman = models.CharField(max_length=20,
+                                          choices=tuple([(f"{i}번", f"{i}번") for i in range(1, 20)])
                                           )
     contactable_email = models.EmailField(null=True, blank=True)
     contactable_phone_number = models.CharField(max_length=20, null=True, blank=True)
 
     interested_fields = models.ManyToManyField(InterestedField)
 
-    homepage_link = models.URLField(null=True, blank=True)
-    linkedin_link = models.URLField(null=True, blank=True)
-    insta_link = models.URLField(null=True, blank=True)
-    github_link = models.URLField(null=True, blank=True)
+    homepage_link = models.URLField(max_length=1000,null=True, blank=True)
+    linkedin_link = models.URLField(max_length=1000,null=True, blank=True)
+    insta_link = models.URLField(max_length=1000,null=True, blank=True)
+    github_link = models.URLField(max_length=1000,null=True, blank=True)
     cv = models.FileField(upload_to="cv", null=True, blank=True)
-    cv_link = models.URLField(null=True, blank=True)
+    cv_link = models.URLField(max_length=1000,null=True, blank=True)
 
     email_accept = models.BooleanField(default=False)
 

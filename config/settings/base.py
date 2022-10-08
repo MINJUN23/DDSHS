@@ -77,6 +77,7 @@ DJANGO_APPS = [
     "django.forms",
     'jquery',
     'djangoformsetjs',
+    'rest_framework',
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",
@@ -270,6 +271,13 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 # django-allauth
 # ------------------------------------------------------------------------------

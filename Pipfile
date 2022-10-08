@@ -8,6 +8,7 @@ django-storages = "*"
 boto3 = "*"
 sentry-sdk = "*"
 django-formset-js-improved = "*"
+djangorestframework = "*"
 
 [dev-packages]
 pipenv-to-requirements = "*"

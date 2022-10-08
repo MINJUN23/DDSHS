@@ -9,7 +9,7 @@
     <meta name="description" content="Daejeon Dongshin Schience High School Community Project">
     <meta name="author" content="MINJUN">
 
-    <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">
+    <link rel="icon" href="https://ddshs.s3.ap-northeast-2.amazonaws.com/static/DDSHS.png">
 
     {% block css %}
     <!-- Latest compiled and minified Bootstrap CSS -->
@@ -42,15 +42,15 @@
           <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <a class="navbar-brand" href="{% url 'home' %}">DDSHS</a>
+          <a class="navbar-brand" href="{% url 'core:home' %}">DDSHS</a>
 
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item active">
-                <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
+                <a class="nav-link" href="{% url 'core:home' %}">Home <span class="visually-hidden">(current)</span></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">About</a>
+                <a class="nav-link" href="{% url 'core:about' %}">About</a>
               </li>
               {% if request.user.is_authenticated %}
                 <li class="nav-item">
