@@ -1,6 +1,7 @@
 import requests
 from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
+from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -42,7 +43,6 @@ def get_user_info(access_token):
     profile_img_link = profile_json.get("properties").get("profile_image")
     return {"kakao_id": kakao_id, "profile_img_link": profile_img_link}
 
-
 def login(request):
     if request.user.is_authenticated:
         return redirect("/")
@@ -59,10 +59,11 @@ def kakao_redirect(request):
     academic_background_formset_factory = modelformset_factory(
                 AcademicBackground,exclude=["user"],
                     extra=1,can_delete = True)
-    academic_background_formset = academic_background_formset_factory(prefix="academic_background_form")
+    academic_background_formset = academic_background_formset_factory(
+        prefix="academic_background_form",queryset=AcademicBackground.objects.none())
     career_formset_factory = modelformset_factory(Career,exclude=["user"],
                    extra=1,can_delete = True)
-    career_formset = career_formset_factory(prefix="career_form")
+    career_formset = career_formset_factory(prefix="career_form",queryset=Career.objects.none())
     if request.method == 'GET':
         try:
             access_token = get_access_token(
@@ -121,7 +122,7 @@ def kakao_redirect(request):
             User.objects.get(username=username).delete()
             return redirect(reverse("users:login"))
 
-
+@login_required
 def detail(request,username):
     user = User.objects.get(username=username)
     academic_background_formset_factory = modelformset_factory(

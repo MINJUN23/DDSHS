@@ -1,1 +1,62 @@
 {% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+{% for user in users%}
+    {% if forloop.counter0|divisibleby:"2" %}
+    <div class=row>
+        {% endif %}
+        <div class="user_module col-md-6">
+            <h1>{{user.get_generation_display}} {{user.name}}</h1>
+            <table class="table">
+                <caption>학력</caption>
+                <thead>
+                    <tr>
+                        <th>기간</th>
+                        <th>과정</th>
+                        <th>기관</th>
+                        <th>전공</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for academic_background in user.academic_backgrounds.all %}
+                    <tr>
+                        <th scope="row">{{academic_background.academy_starting_year}}~{{academic_background.academy_ending_year}}</th>
+                        <td>{{academic_background.degree}}</td>
+                        <td>{{academic_background.institution}}</td>
+                        <td>{{academic_background.major}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table">
+                <caption>경력</caption>
+                <thead>
+                    <tr>
+                        <th>기간</th>
+                        <th>기관</th>
+                        <th>부서</th>
+                        <th>직위</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for career in user.careers.all %}
+                    <tr>
+                    <th scope="row">{{career.career_starting_year}}~{{career.career_ending_year}}</th>
+                    <td>{{career.company}}</td>
+                    <td>{{career.department}}</td>
+                    <td>{{career.position}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </div>
+    {% if forloop.last %}
+</div>
+{% endif %}
+{% if not forloop.counter0|divisibleby:"2" %}
+</div>
+{% endif%}
+{% endfor %}
+</div>
+
+{% endblock content %}

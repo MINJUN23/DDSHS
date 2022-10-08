@@ -28,7 +28,7 @@ def set_academic_backgrounds(user):
             academy_starting_year=academy_starting_year,
             academy_ending_year=academy_ending_year,
             degree = choice(DEGREE_CHOICES)[0],
-            institution=choice(University.get_university_list()),
+            institution=choice(University.get_university_list())[0],
             major = "test_major",
         )
 

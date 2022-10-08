@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.http import JsonResponse
+from django.shortcuts import render
 from rest_framework import serializers
 
 from users.models import AcademicBackground, Career, InterestedField, User
@@ -97,3 +98,16 @@ def api(request):
         users = filter_by_generation(users, generation)
     users_context = [UserSerializer(user).data for user in users]
     return JsonResponse({"users":users_context})
+
+
+def home(request):
+    if request.user.is_authenticated:
+        return render(request,"pages/home.html", context={"users":User.objects.all()})
+    else:
+        return render(request,"pages/need_login.html")
+
+def about(request):
+    if request.user.is_authenticated:
+        return render(request,"pages/about.html")
+    else:
+        return render(request,"pages/need_login.html")
