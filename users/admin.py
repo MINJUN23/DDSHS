@@ -4,10 +4,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from users.forms import UserAdminChangeForm, UserAdminCreationForm
-from users.models import (
-    University, AcademicBackground, Career,
-    InterestedField, User
-    )
+from users.models import AcademicBackground, Career, InterestedField, University, User
 
 User = get_user_model()
 

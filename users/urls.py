@@ -1,11 +1,6 @@
 from django.urls import path
 
-from users.views import (
-    kakao_redirect,
-    login,
-    logout,
-    detail
-)
+from users.views import detail, kakao_redirect, login, logout
 
 app_name = "users"
 urlpatterns = [
